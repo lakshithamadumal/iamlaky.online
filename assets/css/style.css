@@ -1,0 +1,29 @@
+.top-nav {
+    backdrop-filter: blur(25px);
+}
+
+::selection {
+    background: #c6fca6;
+    color: #1e1e1e;
+    text-shadow: none;
+}
+
+::-moz-selection {
+    background: #c6fca6;
+    color: #1e1e1e;
+    text-shadow: none;
+}
+
+.index-projects-img-pizza_paradise {
+    transition: all 0.2s ease-in;
+    opacity: 1;
+}
+
+.index-projects-img-pizza_paradise:hover {
+    opacity: 0.85;
+}
+
+.fade-in-section {
+    animation: fade-in-keyframes linear;
+    animation-timeline: view(800px 0px);
+}

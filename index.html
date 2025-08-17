@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
         <!-- 🔥 Page Title -->
         <title>Laky | Developer, Designer & Creator</title>
         <!--favicon icon-->
@@ -29,44 +30,167 @@
     h1 { font-family: 'Cardo', serif; }
         </style>
     </head>
-    <body class="bg-[#0D1725]">
+    <body class="bg-[#0D1725] text-white">
+        <!-- Hero -->
         <section class="relative bg-[#0D1725] h-screen">
-            <!-- Background Image -->
-            <div class="absolute w-full h-full flex justify-center bg-cover bg-no-repeat bg-center" style="background-image: url('assets/hero-back.svg');"></div>
-            <!-- Content -->
-            <div class="absolute w-full h-full flex items-center justify-center text-center flex-col px-6">
-                <!-- Badge -->
+            <div class="absolute w-full h-full bg-cover bg-no-repeat bg-center" style="background-image: url('assets/hero-back.svg');"></div>
+            <div class="absolute w-full h-full flex items-center justify-center flex-col text-center px-6">
                 <div class="px-4 py-2 bg-gradient-to-br from-[#c6fca61d] to-[#a7fcee1d] rounded-full">
-                    <p class="bg-gradient-to-r from-[#C6FCA6] to-[#A7FCEE] text-transparent bg-clip-text text-xs sm:text-sm font-semibold">
-                        UNDERGRADUATE
-                    </p>
+                    <p class="bg-gradient-to-r from-[#C6FCA6] to-[#A7FCEE] text-transparent bg-clip-text text-xs sm:text-sm font-semibold">UNDERGRADUATE</p>
                 </div>
-                <!-- Title -->
-                <h1 class="text-center text-4xl sm:text-6xl text-white font-bold mt-4">
-                    Lakshitha Madumal
-                </h1>
-                <!-- Description -->
-                <p class="text-white text-opacity-60 text-xs sm:text-sm max-w-[45ch] font-normal mt-6">
-                    Proficient in full-stack development with HTML, CSS, JS, PHP, 
-                    and experienced in enterprise solutions using Java EE, React
+                <h1 class="text-4xl sm:text-6xl font-bold mt-4">Lakshitha Madumal</h1>
+                <p class="text-white/60 text-xs sm:text-sm mt-6 max-w-[45ch]">
+                    Proficient in full-stack development with HTML, CSS, JS, PHP, and experienced in enterprise solutions using Java EE, React
                 </p>
-                <!-- Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 mt-10">
-                    <!-- Explore Work -->
-                    <a href="#work" class="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-[10px] border-2 border-white border-opacity-20 text-white text-sm font-medium transition-all duration-500 hover:bg-white/10 hover:text-white">
+                    <a href="#work" class="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-[10px] border-2 border-white/20 text-white text-sm font-medium transition-all hover:bg-white/10">
                         Explore my work
                         <i data-lucide="arrow-down" class="w-4 h-4"></i>
                     </a>
-                    <!-- Connect -->
-                    <a href="/contact-me" class="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-[10px] border-2 border-white border-opacity-20 bg-white/90 text-black text-sm font-medium transition-all duration-500 hover:bg-white">
+                    <a href="contact-me.html" class="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-[10px] border-2 border-white/20 bg-white/90 text-black text-sm font-medium transition-all hover:bg-white">
                         Let&apos;s Connect
                         <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
                     </a>
                 </div>
             </div>
         </section>
-        <script>
-    lucide.createIcons();
-        </script>
+        <!-- Work -->
+        <section id="work" class="min-h-[200dvh] relative bg-[#0D1725] p-8 sm:py-20">
+            <div class="grid grid-cols-1 sm:grid-cols-2 max-w-4xl mx-auto gap-20 sm:gap-10">
+                <!-- Sticky heading -->
+                <div class="flex flex-col gap-4 sm:sticky top-20 self-start">
+                    <svg
+                        width="64"
+                        height="64"
+                        viewBox="0 0 64 64"
+                        fill="none"
+                    >
+                        <path d="M32 0L35.2 12C37.4 20.2 43.8 26.6 52 28.8L64 32L52 35.2C43.8 37.4 37.4 43.8 35.2 52L32 64L28.8 52C26.6 43.8 20.2 37.4 12 35.2L0 32L12 28.8C20.2 26.6 26.6 20.2 28.8 12L32 0Z" fill="#C6FCA6"/>
+                    </svg>
+                    <h1 class="text-4xl sm:text-6xl font-bold">My Work</h1>
+                </div>
+                <!-- Phoenix Project Card -->
+                <div class="flex flex-col group">
+                    <!-- Banner -->
+                    <div class="w-full h-64 bg-gradient-to-br from-[#4B002E] to-[#0F0B14] flex justify-center items-center relative rounded-xl overflow-hidden">
+                        <!-- SVG Logo -->
+                        <svg
+                            width="65"
+                            height="67"
+                            viewBox="0 0 65 67"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <defs>
+                                <!-- Gold Gradient -->
+                                <linearGradient
+                                    id="ayuGold"
+                                    x1="0"
+                                    y1="0"
+                                    x2="0"
+                                    y2="67"
+                                    gradientUnits="userSpaceOnUse"
+                                >
+                                    <stop offset="0" stop-color="#E9C97A"/>
+                                    <stop offset="0.55" stop-color="#C89B55"/>
+                                    <stop offset="1" stop-color="#8A5A20"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- AYU Logo Outline (vectorized) -->
+                            <path
+                                d="M10 5 H55 V62 H10 Z 
+       M20 20 C25 15, 40 15, 45 20 
+       C47 25, 47 40, 45 45 
+       C40 50, 25 50, 20 45 
+       C18 40, 18 25, 20 20 Z
+       M32 20 L32 47"
+                                fill="none"
+                                stroke="url(#ayuGold)"
+                                stroke-width="2"
+                            />
+                        </svg>
+                        <!-- Live Demo CTA -->
+                        <a href="#" target="_blank" class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all bg-black/60 hover:bg-black text-white rounded-full px-3 py-1 flex items-center gap-1 text-sm">
+                            View
+                            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                    <!-- Description -->
+                    <p class="mt-6 mb-6 text-sm sm:text-base text-white/70">
+                        AYU - AYU is an AI-powered health assistant bot developed by Team AURA. Built with Arduino & AURA’s AI model, AYU provides friendly and intelligent health support in Sinhala 🇱🇰. It listens attentively, responds effectively, and offers basic health guidance to enhance accessibility and wellness.
+                    </p>
+                    <!-- Links -->
+                    <div class="flex gap-6">
+                        <a href="#" target="_blank" class="text-white/70 hover:bg-[#c6fca6] hover:text-black flex items-center">
+                            Live
+                            <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                        <a href="#" target="_blank" class="text-white/70 hover:bg-[#c6fca6] hover:text-black flex items-center">
+                            GitHub
+                            <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Stats -->
+        <!-- <section class="px-10 bg-[#0D1725] pt-10">
+    <div class="mt-28 grid grid-cols-1 sm:grid-cols-2 max-w-4xl mx-auto gap-10">
+      <div class="w-full h-64 bg-[#1F2934] border border-white/20 rounded-xl p-10">
+        <h1 class="text-base">🎯 Leetcode</h1>
+        <h1 class="text-4xl sm:text-5xl font-bold mt-2">50+ Solved</h1>
+        <div class="mt-10">
+          <a href="https://leetcode.com/u/vishvakalhara/" target="_blank" class="text-white/70 hover:bg-[#c6fca6] hover:text-black flex items-center">Profile <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1"></i></a>
+        </div>
+      </div>
+      <div class="w-full h-64 bg-[#1F2934] border border-white/20 rounded-xl p-10">
+        <h1 class="text-base">✍️ Writing</h1>
+        <h1 class="text-4xl sm:text-5xl font-bold mt-2">My Articles</h1>
+        <div class="mt-10">
+          <a href="https://medium.com/@vishvakalhara" target="_blank" class="text-white/70 hover:bg-[#c6fca6] hover:text-black flex items-center">Medium <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1"></i></a>
+        </div>
+      </div>
+    </div>
+  </section> -->
+        <!-- Connect CTA -->
+        <section class="px-10 bg-[#0D1725] py-10 overflow-clip">
+            <div class="relative mx-auto bg-gradient-to-br from-[#C6FCA6] to-[#a7fceeba] w-full max-w-4xl p-10 rounded-2xl flex flex-col gap-4">
+                <h1 class="text-center text-xl sm:text-2xl font-bold text-black/90">Let&apos;s connect and work together</h1>
+                <p class="text-center text-xs sm:text-sm text-black/80 max-w-prose mx-auto">Reach out to me for collaborations, inquiries, or just to say hello.</p>
+                <div class="flex justify-center mt-6">
+                    <a href="contact-me.html" class="shadow-xl h-10 px-5 rounded-full border-2 border-black/20 bg-black/90 text-white transition-all hover:bg-black flex items-center gap-2">
+                        Let&apos;s Connect
+                        <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+        <!-- Footer -->
+        <section class="bg-[#0D1725] py-10 px-10">
+            <div class="border border-white/10 w-full mb-10"></div>
+            <div class="max-w-4xl mx-auto flex flex-col gap-4">
+                <p class="text-center text-xs sm:text-sm text-white">© 2025 Lakshitha Madumal</p>
+                <div class="flex justify-center gap-6">
+                    <a href="https://www.linkedin.com/in/lakshitha-madumal/" target="_blank" class="text-white/70 hover:text-white hover:bg-white/10 flex items-center text-sm">
+                        LinkedIn
+                        <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1"></i>
+                    </a>
+                    <a href="https://github.com/lakshithamadumal" target="_blank" class="text-white/70 hover:text-white hover:bg-white/10 flex items-center text-sm">
+                        GitHub
+                        <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1"></i>
+                    </a>
+                    <a href="https://instagram.com/laky.xyz" target="_blank" class="text-white/70 hover:text-white hover:bg-white/10 flex items-center text-sm">
+                        Instagram
+                        <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1"></i>
+                    </a>
+                </div>
+                <!-- <p class="mt-6 text-center text-xs sm:text-sm text-white/40">
+        Developed with <a href="https://nextjs.org/" class="underline hover:text-white">Next.js</a>, 
+        <a href="https://tailwindcss.com/" class="underline hover:text-white">Tailwind CSS</a> & 
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API" class="underline hover:text-white">View Transitions API</a>
+      </p> -->
+            </div>
+        </section>
+        <script>lucide.createIcons();</script>
     </body>
 </html>

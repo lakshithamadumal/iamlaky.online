@@ -22,12 +22,14 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="assets/css/style.css">
         <link rel="stylesheet" href="assets/css/cursor.css">
+        <!-- Locomotive Scroll CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css">
         <!-- Google Fonts for Cardo & Poppins -->
         <link href="https://fonts.googleapis.com/css2?family=Cardo:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
         <!-- Lucide icons -->
         <script src="https://unpkg.com/lucide@latest"></script>
-        <!-- React Lenis for smooth scrolling -->
-        <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/bundled/lenis.min.js"></script>
+        <!-- Locomotive Scroll JS -->
+        <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
         <style>
     body { font-family: 'Poppins', sans-serif; overflow-x: hidden; }
     h1 { font-family: 'Cardo', serif; }
@@ -39,8 +41,9 @@
         <div class="cursor-follower"></div>
         <!-- Scroll Progress Indicator -->
         <div class="scroll-progress" id="scrollProgress"></div>
+        <div data-scroll-container>
         <!-- Hero -->
-        <section class="relative bg-[#0D1725] h-screen page-transition">
+        <section class="relative bg-[#0D1725] h-screen page-transition" data-scroll-section>
             <div class="absolute w-full h-full bg-cover bg-no-repeat bg-center parallax" style="background-image: url('assets/hero-back.svg');"></div>
             <div class="absolute w-full h-full flex items-center justify-center flex-col text-center px-6">
                 <div class="px-4 py-2 bg-gradient-to-br from-[#c6fca61d] to-[#a7fcee1d] rounded-full scale-in">
@@ -63,7 +66,7 @@
             </div>
         </section>
         <!-- Work -->
-        <section id="work" class="min-h-[100vh] relative bg-[#0D1725] p-8 sm:py-20">
+        <section id="work" class="min-h-[100vh] relative bg-[#0D1725] p-8 sm:py-20" data-scroll-section>
             <div class="grid grid-cols-1 sm:grid-cols-2 max-w-5xl mx-auto gap-20 sm:gap-10">
                 <!-- Sticky heading -->
                 <div class="flex flex-col gap-4 sm:sticky top-20 self-start">
@@ -123,7 +126,7 @@
             </div>
         </section>
         <!-- Connect CTA -->
-        <section class="px-10 py-10 overflow-clip mt-10">
+        <section class="px-10 py-10 overflow-clip mt-10" data-scroll-section>
             <div class="relative mx-auto bg-gradient-to-br from-[#C6FCA6] to-[#a7fceeba] w-full max-w-4xl p-10 rounded-2xl flex flex-col gap-4 index-project-items scale-in pulse-glow">
                 <!-- Heading -->
                 <h1 class="text-center font-serif text-xl sm:text-2xl text-black/90 font-bold">
@@ -184,7 +187,7 @@
             </div>
         </section>
         <!-- Footer -->
-        <section class="bg-[#0D1725] py-10 px-10">
+        <section class="bg-[#0D1725] py-10 px-10" data-scroll-section>
             <div class="border border-white/10 w-full mb-10"></div>
             <div class="max-w-4xl mx-auto flex flex-col gap-4">
                 <p class="text-center text-xs sm:text-sm text-white">© 2025 Lakshitha Madumal</p>
@@ -204,53 +207,44 @@
                 </div>
             </div>
         </section>
+        </div>
         <script>lucide.createIcons();</script>
-        <!-- React Lenis Smooth Scrolling -->
+        <!-- Locomotive Scroll initialization and anchor handling -->
         <script>
-            // Initialize Lenis for smooth scrolling
-            const lenis = new Lenis({
-                duration: 1.2,
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                direction: 'vertical',
-                gestureDirection: 'vertical',
-                smooth: true,
-                mouseMultiplier: 1,
-                smoothTouch: false,
-                touchMultiplier: 2,
-                infinite: false,
-            });
+            document.addEventListener('DOMContentLoaded', function () {
+                var container = document.querySelector('[data-scroll-container]');
+                if (container && window.LocomotiveScroll) {
+                    window.locoScroll = new LocomotiveScroll({
+                        el: container,
+                        smooth: true,
+                        multiplier: 1,
+                        smartphone: { smooth: true },
+                        tablet: { smooth: true }
+                    });
 
-            function raf(time) {
-                lenis.raf(time);
-                requestAnimationFrame(raf);
-            }
-
-            requestAnimationFrame(raf);
-
-            // Scroll progress indicator
-            const scrollProgress = document.getElementById('scrollProgress');
-            
-            window.addEventListener('scroll', () => {
-                const scrollTop = window.pageYOffset;
-                const docHeight = document.body.offsetHeight - window.innerHeight;
-                const scrollPercent = (scrollTop / docHeight) * 100;
-                scrollProgress.style.width = scrollPercent + '%';
-            });
-
-            // View Transitions API support
-            if (document.startViewTransition) {
-                // Handle navigation with View Transitions API
-                document.addEventListener('click', (e) => {
-                    const link = e.target.closest('a');
-                    if (link && link.href && link.href.startsWith(window.location.origin)) {
-                        e.preventDefault();
-                        
-                        document.startViewTransition(() => {
-                            window.location.href = link.href;
+                    // Update scroll progress using Locomotive's virtual scroll
+                    var scrollProgress = document.getElementById('scrollProgress');
+                    if (scrollProgress) {
+                        window.locoScroll.on('scroll', function (args) {
+                            var limit = args.limit && args.limit.y ? args.limit.y : (document.body.offsetHeight - window.innerHeight);
+                            var y = args.scroll && args.scroll.y ? args.scroll.y : window.pageYOffset;
+                            var percent = limit > 0 ? (y / limit) * 100 : 0;
+                            scrollProgress.style.width = percent + '%';
                         });
                     }
-                });
-            }
+
+                    // Smooth anchor navigation
+                    document.addEventListener('click', function (e) {
+                        var link = e.target.closest('a[href^="#"]');
+                        if (!link) return;
+                        var href = link.getAttribute('href');
+                        if (href && href.length > 1) {
+                            e.preventDefault();
+                            window.locoScroll.scrollTo(href);
+                        }
+                    });
+                }
+            });
         </script>
         <!-- Advanced Animations and Interactions -->
         <script src="assets/js/animations.js"></script>

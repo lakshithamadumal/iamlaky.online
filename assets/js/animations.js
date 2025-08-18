@@ -62,6 +62,20 @@ class ScrollAnimations {
     setupParallaxEffects() {
         const parallaxElements = document.querySelectorAll('.parallax');
         
+        // Use Locomotive Scroll's virtual scroll position if available
+        if (window.locoScroll && typeof window.locoScroll.on === 'function') {
+            window.locoScroll.on('scroll', (args) => {
+                const scrolled = args && args.scroll && typeof args.scroll.y === 'number' ? args.scroll.y : 0;
+                parallaxElements.forEach((element) => {
+                    const speed = element.dataset.speed || 0.5;
+                    const yPos = -(scrolled * speed);
+                    element.style.transform = `translateY(${yPos}px)`;
+                });
+            });
+            return;
+        }
+
+        // Fallback to native scroll position
         window.addEventListener('scroll', () => {
             const scrolled = window.pageYOffset;
             
@@ -78,21 +92,30 @@ class ScrollAnimations {
         const progressBar = document.getElementById('scrollProgress');
         if (!progressBar) return;
 
-        let ticking = false;
+        // Prefer Locomotive Scroll if present
+        if (window.locoScroll && typeof window.locoScroll.on === 'function') {
+            window.locoScroll.on('scroll', (args) => {
+                const limit = args.limit && typeof args.limit.y === 'number' ? args.limit.y : (document.body.offsetHeight - window.innerHeight);
+                const y = args.scroll && typeof args.scroll.y === 'number' ? args.scroll.y : 0;
+                const percent = limit > 0 ? (y / limit) * 100 : 0;
+                progressBar.style.width = `${percent}%`;
+                progressBar.style.boxShadow = percent > 50
+                    ? '0 0 20px rgba(198, 252, 166, 0.6)'
+                    : '0 0 10px rgba(198, 252, 166, 0.3)';
+            });
+            return;
+        }
 
+        let ticking = false;
         const updateProgress = () => {
             const scrollTop = window.pageYOffset;
             const docHeight = document.body.offsetHeight - window.innerHeight;
             const scrollPercent = (scrollTop / docHeight) * 100;
             
             progressBar.style.width = `${scrollPercent}%`;
-            
-            // Add glow effect at certain scroll percentages
-            if (scrollPercent > 50) {
-                progressBar.style.boxShadow = '0 0 20px rgba(198, 252, 166, 0.6)';
-            } else {
-                progressBar.style.boxShadow = '0 0 10px rgba(198, 252, 166, 0.3)';
-            }
+            progressBar.style.boxShadow = scrollPercent > 50
+                ? '0 0 20px rgba(198, 252, 166, 0.6)'
+                : '0 0 10px rgba(198, 252, 166, 0.3)';
             
             ticking = false;
         };
@@ -114,10 +137,13 @@ class ScrollAnimations {
             return;
         }
 
-        // Handle all internal navigation
+        // Handle all internal navigation (skip in-page hash links)
         document.addEventListener('click', (e) => {
             const link = e.target.closest('a');
             if (!link || !link.href || !link.href.startsWith(window.location.origin)) return;
+
+            // Allow in-page anchors (e.g. #work) to be handled by Locomotive Scroll
+            if (link.hash && link.pathname === window.location.pathname) return;
 
             e.preventDefault();
             
@@ -197,61 +223,7 @@ class ScrollAnimations {
     }
 }
 
-// Enhanced Lenis configuration
-class EnhancedLenis {
-    constructor() {
-        this.init();
-    }
-
-    init() {
-        if (typeof Lenis === 'undefined') {
-            console.log('Lenis not loaded');
-            return;
-        }
-
-        this.lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-            infinite: false,
-        });
-
-        this.setupRaf();
-    }
-
-    setupRaf() {
-        const raf = (time) => {
-            this.lenis.raf(time);
-            requestAnimationFrame(raf);
-        };
-        requestAnimationFrame(raf);
-    }
-
-    // Method to scroll to element with easing
-    scrollTo(target, options = {}) {
-        const defaultOptions = {
-            offset: 0,
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
-        };
-
-        const finalOptions = { ...defaultOptions, ...options };
-        
-        if (typeof target === 'string') {
-            target = document.querySelector(target);
-        }
-
-        if (target) {
-            const targetPosition = target.offsetTop - finalOptions.offset;
-            this.lenis.scrollTo(targetPosition, finalOptions);
-        }
-    }
-}
+// Lenis-based smooth scrolling removed in favor of Locomotive Scroll
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -259,9 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize scroll animations
     new ScrollAnimations();
-    
-    // Initialize enhanced Lenis
-    new EnhancedLenis();
     
     // Add loading animation
     document.body.classList.add('loaded');

@@ -1,0 +1,48 @@
+/*cursor*/
+.cursor,
+.cursor-follower {
+  position: fixed;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+}
+
+.cursor {
+  width: 10px;
+  height: 10px;
+  background-color: #1e1e1e;
+  transition: width 0.2s, height 0.2s;
+}
+
+.cursor-follower {
+  width: 38px;
+  height: 38px;
+  border: 2px solid #1e1e1e;
+  transition: all 0.3s ease-out;
+}
+
+.cursor.active {
+  width: 40px;
+  height: 40px;
+  opacity: 0;
+}
+
+.cursor-follower.active {
+  width: 80px;
+  height: 80px;
+  border-width: 1px;
+}
+
+
+@media (max-width: 768px) {
+
+  .cursor {
+    display: none;
+  }
+
+  .cursor-follower {
+    display: none;
+  }
+}

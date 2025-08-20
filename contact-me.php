@@ -14,7 +14,7 @@
         <meta property="og:title" content="Contact Laky | Let's Connect">
         <meta property="og:description" content="Reach out to me for collaborations, projects, or just to say hi! I’m always open to creative ideas and opportunities.">
         <meta property="og:type" content="website">
-        <meta property="og:url" content="https://www.iamlaky.online/contact-me.html">
+        <meta property="og:url" content="https://www.iamlaky.online/contact-me.php">
         <meta property="og:image" content="https://iamlaky.online/assets/favicon.png">
 
         <script src="https://cdn.tailwindcss.com"></script>
@@ -53,7 +53,7 @@
                 <div class="flex flex-col">
                     <!-- Back Button -->
                     <div class="slide-in-left">
-                        <a href="index.html" class="inline-flex items-center gap-2 transition-all duration-300 border-black h-10 rounded-[10px] border-2 border-opacity-0 text-black bg-black/10 px-4 hover:bg-black hover:text-white btn-animate hover-lift">
+                        <a href="index.php" class="inline-flex items-center gap-2 transition-all duration-300 border-black h-10 rounded-[10px] border-2 border-opacity-0 text-black bg-black/10 px-4 hover:bg-black hover:text-white btn-animate hover-lift">
                             <i data-lucide="arrow-left" class="w-4 h-4"></i>
                             Home
                         </a>

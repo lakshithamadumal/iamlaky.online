@@ -1,3 +1,15 @@
+<?php
+require_once __DIR__ . '/connection.php';
+try {
+    $result = Database::search("SELECT * FROM projects ORDER BY created_at DESC");
+    $projects = [];
+    while ($row = $result->fetch_assoc()) {
+        $projects[] = $row;
+    }
+} catch (Exception $e) {
+    $projects = [];
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -58,7 +70,7 @@
                         Explore my work
                         <i data-lucide="arrow-down" class="w-4 h-4"></i>
                     </a>
-                    <a href="contact-me.html" class="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-[10px] border-2 border-white/20 bg-white/90 text-black text-sm font-medium transition-all hover:bg-white btn-animate hover-lift">
+                    <a href="contact-me.php" class="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-[10px] border-2 border-white/20 bg-white/90 text-black text-sm font-medium transition-all hover:bg-white btn-animate hover-lift">
                         Let&apos;s Connect
                         <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
                     </a>
@@ -82,46 +94,54 @@
                     <h1 class="text-4xl sm:text-6xl font-bold text-white slide-in-left">My Work</h1>
                 </div>
                 <div class="flex flex-col gap-16">
-                    <!-- Project -->
-                    <div class="flex flex-col group slide-in-right cursor-pointer">
-                        <div class="w-full h-64 bg-gradient-to-br from-[#833AB4] to-[#FD1D1D] flex justify-center items-center relative rounded-xl overflow-hidden hover-lift">
-                            <svg
-                                width="65"
-                                height="67"
-                                viewBox="0 0 65 67"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M59.8911 0.186035L36.5451 36.8812L33.3145 20.789H0.886215L59.8911 0.186035ZM5.7628 66.7493L29.1087 30.0542L32.3394 46.1464H64.7676L5.7628 66.7493Z"
-                                    fill="#EEE"
-                                />
-                            </svg>
-                            <a href="https://example.com/" target="_blank" class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all bg-black/60 hover:bg-black text-white rounded-full px-3 py-1 flex items-center gap-1 text-sm">
-                                Live
-                                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
-                            </a>
+                    <?php if (!empty($projects)): ?>
+                        <?php foreach ($projects as $project): ?>
+                            <div class="flex flex-col group slide-in-right cursor-pointer">
+                                <div class="w-full h-64 <?php echo ($project['project_type'] === 'image') ? '' : 'flex justify-center items-center'; ?> relative rounded-xl overflow-hidden hover-lift" <?php if ($project['project_type'] === 'gradient') { echo 'style="background: linear-gradient(to bottom right, ' . htmlspecialchars($project['gradient_start'] ?? '#833AB4') . ', ' . htmlspecialchars($project['gradient_end'] ?? '#FD1D1D') . ');"'; } ?>>
+                                    <?php if ($project['project_type'] === 'image' && !empty($project['image_path'])): ?>
+                                        <img src="<?php echo htmlspecialchars($project['image_path']); ?>" alt="<?php echo htmlspecialchars($project['title']); ?>" class="w-full h-full object-cover">
+                                    <?php else: ?>
+                                        <?php if (!empty($project['svg_code'])) { echo $project['svg_code']; } else { ?>
+                                            <svg width="65" height="67" viewBox="0 0 65 67" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M59.8911 0.186035L36.5451 36.8812L33.3145 20.789H0.886215L59.8911 0.186035ZM5.7628 66.7493L29.1087 30.0542L32.3394 46.1464H64.7676L5.7628 66.7493Z" fill="#EEE"/>
+                                            </svg>
+                                        <?php } ?>
+                                    <?php endif; ?>
+                                    <a href="<?php echo htmlspecialchars($project['live_link']); ?>" target="_blank" class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all bg-black/60 hover:bg-black text-white rounded-full px-3 py-1 flex items-center gap-1 text-sm">
+                                        Live
+                                        <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                                    </a>
+                                </div>
+                                <p class="mt-6 mb-6 text-sm sm:text-base text-white font-weight: 650">
+                                    <?php echo htmlspecialchars($project['description']); ?>
+                                </p>
+                                <div class="flex gap-6">
+                                    <?php if (!empty($project['has_linkedin']) && !empty($project['linkedin_link'])): ?>
+                                        <a href="<?php echo htmlspecialchars($project['linkedin_link']); ?>" target="_blank" class="text-white/70 hover:bg-[#c6fca6] hover:text-black flex items-center btn-animate font-weight: 650">
+                                            Linkedin
+                                            <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if (!empty($project['has_github']) && !empty($project['github_link'])): ?>
+                                        <a href="<?php echo htmlspecialchars($project['github_link']); ?>" target="_blank" class="text-white/70 hover:bg-[#c6fca6] hover:text-black flex items-center btn-animate font-weight: 650">
+                                            GitHub
+                                            <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if (!empty($project['has_download']) && !empty($project['download_link'])): ?>
+                                        <a href="<?php echo htmlspecialchars($project['download_link']); ?>" target="_blank" class="text-white/70 hover:bg-[#c6fca6] hover:text-black flex items-center btn-animate font-weight: 650">
+                                            Download
+                                            <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="text-white/70 text-sm">
+                            No projects added yet. Check back soon.
                         </div>
-                        <p class="mt-6 mb-6 text-sm sm:text-base text-white font-weight: 650">
-                            This is a placeholder description for testing the layout, design, and responsiveness of the project card on your portfolio website.
-                        </p>
-                        <div class="flex gap-6">
-                            <a href="https://example.com/" target="_blank" class="text-white/70 hover:bg-[#c6fca6] hover:text-black flex items-center btn-animate font-weight: 650">
-                                Linkedin
-                                <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1"></i>
-                            </a>
-                            <a href="https://example.com/" target="_blank" class="text-white/70 hover:bg-[#c6fca6] hover:text-black flex items-center btn-animate font-weight: 650">
-                                GitHub
-                                <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1"></i>
-                            </a>
-                            <a href="https://example.com/" target="_blank" class="text-white/70 hover:bg-[#c6fca6] hover:text-black flex items-center btn-animate font-weight: 650">
-                                Download
-                                <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1"></i>
-                            </a>
-                        </div>
-                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </section>
@@ -138,7 +158,7 @@
                 </p>
                 <!-- Button -->
                 <div class="flex justify-center mt-6">
-                    <a href="contact-me.html" class="shadow-xl transition-all duration-300 border-black h-10 border-opacity-20 px-5 rounded-full border-2 bg-black/90 text-white hover:bg-black flex items-center gap-2 btn-animate hover-lift">
+                    <a href="contact-me.php" class="shadow-xl transition-all duration-300 border-black h-10 border-opacity-20 px-5 rounded-full border-2 bg-black/90 text-white hover:bg-black flex items-center gap-2 btn-animate hover-lift">
                         Let's Connect
                         <!-- ArrowUpRight Icon -->
                         <svg

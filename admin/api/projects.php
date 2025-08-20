@@ -1,114 +1,119 @@
 <?php
+session_start();
 header('Content-Type: application/json');
-require_once __DIR__ . '/../../config.php';
 
-// Authentication middleware
-function authenticate() {
-    if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
-        header('WWW-Authenticate: Basic realm="Admin Dashboard"');
-        http_response_code(401);
-        echo json_encode(['message' => 'Authentication required']);
-        exit;
-    }
-    
-    $email = $_SERVER['PHP_AUTH_USER'];
-    $password = $_SERVER['PHP_AUTH_PW'];
-    
-    // Validate credentials (in a real app, use prepared statements and password_verify)
-    $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE email = ?");
-    $stmt->execute([$email]);
-    $user = $stmt->fetch();
-    
-    if (!$user || !password_verify($password, $user['password_hash'])) {
-        http_response_code(401);
-        echo json_encode(['message' => 'Invalid credentials']);
-        exit;
-    }
-    
-    return $user;
+if (empty($_SESSION['admin_logged_in'])) {
+    http_response_code(401);
+    echo json_encode(['message' => 'Unauthorized']);
+    exit;
 }
 
-// Handle different request methods
+require_once __DIR__ . '/../../connection.php';
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 try {
     switch ($method) {
         case 'GET':
             // List all projects
-            $stmt = $pdo->query("SELECT * FROM projects ORDER BY created_at DESC");
-            $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = Database::search("SELECT * FROM projects ORDER BY created_at DESC");
+            $projects = [];
+            while ($row = $result->fetch_assoc()) {
+                $row['has_linkedin'] = (bool)$row['has_linkedin'];
+                $row['has_github'] = (bool)$row['has_github'];
+                $row['has_download'] = (bool)$row['has_download'];
+                $projects[] = $row;
+            }
             echo json_encode($projects);
             break;
-            
+
         case 'POST':
             // Create new project
-            $user = authenticate();
-            
-            // Handle file upload
             $uploadDir = __DIR__ . '/../../assets/uploads/';
             if (!file_exists($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
-            
-            $projectData = [
-                'title' => $_POST['title'],
-                'description' => $_POST['description'],
-                'project_type' => $_POST['project_type'],
-                'live_link' => $_POST['live_link'],
-                'has_linkedin' => isset($_POST['has_linkedin']) ? 1 : 0,
-                'linkedin_link' => $_POST['linkedin_link'] ?? null,
-                'has_github' => isset($_POST['has_github']) ? 1 : 0,
-                'github_link' => $_POST['github_link'] ?? null,
-                'has_download' => isset($_POST['has_download']) ? 1 : 0,
-                'download_link' => $_POST['download_link'] ?? null,
-                'gradient_start' => $_POST['gradient_start'] ?? null,
-                'gradient_end' => $_POST['gradient_end'] ?? null,
-                'svg_code' => $_POST['svg_code'] ?? null,
-                'image_path' => null
-            ];
-            
-            if ($projectData['project_type'] === 'image' && isset($_FILES['project_image'])) {
+
+            $title = Database::escape_string($_POST['title'] ?? '');
+            $description = Database::escape_string($_POST['description'] ?? '');
+            $project_type = Database::escape_string($_POST['project_type'] ?? 'image');
+            $live_link = Database::escape_string($_POST['live_link'] ?? '');
+
+            $has_linkedin = filter_var($_POST['has_linkedin'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+            $has_github = filter_var($_POST['has_github'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+            $has_download = filter_var($_POST['has_download'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+
+            $linkedin_link_val = $has_linkedin ? "'" . Database::escape_string($_POST['linkedin_link'] ?? '') . "'" : "NULL";
+            $github_link_val = $has_github ? "'" . Database::escape_string($_POST['github_link'] ?? '') . "'" : "NULL";
+            $download_link_val = $has_download ? "'" . Database::escape_string($_POST['download_link'] ?? '') . "'" : "NULL";
+
+            $gradient_start_val = ($project_type === 'gradient') ? "'" . Database::escape_string($_POST['gradient_start'] ?? '') . "'" : "NULL";
+            $gradient_end_val = ($project_type === 'gradient') ? "'" . Database::escape_string($_POST['gradient_end'] ?? '') . "'" : "NULL";
+            $svg_code_val = ($project_type === 'gradient') ? "'" . Database::escape_string($_POST['svg_code'] ?? '') . "'" : "NULL";
+
+            $image_path_val = "NULL";
+            if ($project_type === 'image' && isset($_FILES['project_image']) && is_uploaded_file($_FILES['project_image']['tmp_name'])) {
                 $file = $_FILES['project_image'];
-                $fileName = uniqid() . '.' . pathinfo($file['name'], PATHINFO_EXTENSION);
+                $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                $fileName = uniqid('project_', true) . ($ext ? ('.' . $ext) : '');
                 $filePath = $uploadDir . $fileName;
-                
                 if (move_uploaded_file($file['tmp_name'], $filePath)) {
-                    $projectData['image_path'] = 'assets/uploads/' . $fileName;
+                    $relativePath = 'assets/uploads/' . $fileName;
+                    $image_path_val = "'" . Database::escape_string($relativePath) . "'";
                 }
             }
-            
-            // Insert into database
-            $stmt = $pdo->prepare("
-                INSERT INTO projects (
+
+            if ($title === '' || $description === '' || $live_link === '') {
+                http_response_code(400);
+                echo json_encode(['message' => 'Missing required fields']);
+                exit;
+            }
+
+            $q = "INSERT INTO projects (
                     title, description, project_type, image_path, gradient_start, gradient_end, svg_code,
                     live_link, has_linkedin, linkedin_link, has_github, github_link, has_download, download_link
                 ) VALUES (
-                    :title, :description, :project_type, :image_path, :gradient_start, :gradient_end, :svg_code,
-                    :live_link, :has_linkedin, :linkedin_link, :has_github, :github_link, :has_download, :download_link
-                )
-            ");
-            
-            if ($stmt->execute($projectData)) {
-                http_response_code(201);
-                echo json_encode(['message' => 'Project created successfully', 'id' => $pdo->lastInsertId()]);
-            } else {
-                http_response_code(500);
-                echo json_encode(['message' => 'Error creating project']);
-            }
+                    '$title', '$description', '$project_type', $image_path_val, $gradient_start_val, $gradient_end_val, $svg_code_val,
+                    '$live_link', $has_linkedin, $linkedin_link_val, $has_github, $github_link_val, $has_download, $download_link_val
+                )";
+
+            Database::iud($q);
+            http_response_code(201);
+            echo json_encode(['message' => 'Project created successfully']);
             break;
-            
-        case 'PUT':
+
         case 'DELETE':
-            // Implement update and delete as needed
-            http_response_code(501);
-            echo json_encode(['message' => 'Not implemented yet']);
+            $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+            if ($id <= 0) {
+                http_response_code(400);
+                echo json_encode(['message' => 'Invalid project id']);
+                exit;
+            }
+
+            // Remove image file if present
+            $res = Database::search("SELECT image_path FROM projects WHERE id = $id");
+            if ($res && $res->num_rows === 1) {
+                $row = $res->fetch_assoc();
+                if (!empty($row['image_path'])) {
+                    $full = __DIR__ . '/../../' . $row['image_path'];
+                    if (file_exists($full)) {
+                        @unlink($full);
+                    }
+                }
+            }
+
+            Database::iud("DELETE FROM projects WHERE id = $id");
+            echo json_encode(['message' => 'Project deleted successfully']);
             break;
-            
+
         default:
             http_response_code(405);
             echo json_encode(['message' => 'Method not allowed']);
     }
-} catch (PDOException $e) {
+} catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['message' => 'Database error: ' . $e->getMessage()]);
+    echo json_encode(['message' => 'Server error: ' . $e->getMessage()]);
 }
+
+?>
+?>

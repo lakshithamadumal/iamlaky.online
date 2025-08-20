@@ -8,6 +8,7 @@
         <link rel="shortcut icon" href="../assets/favicon.png" type="image/x-icon">
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://unpkg.com/lucide@latest"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <style>
         body { font-family: 'Poppins', sans-serif; background-color: #0D1725; }
         </style>
@@ -50,29 +51,44 @@
         
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            
+
             try {
-                const response = await fetch('/admin/api/login', {
+                const response = await fetch('api/login.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ email, password })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok) {
-                    window.location.href = '/admin/dashboard';
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Login Successful!',
+                        showConfirmButton: false,
+                        timer: 1200
+                    }).then(() => {
+                        window.location.href = 'dashboard.php';
+                    });
                 } else {
-                    alert(data.message || 'Login failed');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Login Failed',
+                        text: data.message || 'Invalid credentials'
+                    });
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred during login');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred during login'
+                });
             }
         });
         </script>

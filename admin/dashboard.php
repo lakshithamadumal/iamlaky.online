@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (empty($_SESSION['admin_logged_in'])) {
+    header('Location: login.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -8,6 +15,7 @@
         <link rel="shortcut icon" href="../assets/favicon.png" type="image/x-icon">
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://unpkg.com/lucide@latest"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <style>
         body { font-family: 'Poppins', sans-serif; background-color: #0D1725; }
         .tab-content { display: none; }
@@ -20,7 +28,7 @@
             <header class="flex justify-between items-center mb-8">
                 <h1 class="text-2xl font-bold">Admin Dashboard</h1>
                 <div class="flex items-center gap-3">
-                    <a href="project-form.html" class="text-sm bg-gradient-to-r from-[#C6FCA6] to-[#A7FCEE] text-black px-4 py-2 rounded-lg flex items-center gap-2">
+                    <a href="project-form.php" class="text-sm bg-gradient-to-r from-[#C6FCA6] to-[#A7FCEE] text-black px-4 py-2 rounded-lg flex items-center gap-2">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         Add New Project
                     </a>
@@ -36,7 +44,7 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-white/60 text-sm">Total Projects</p>
-                            <h3 class="text-2xl font-bold mt-1">12</h3>
+                            <h3 id="totalProjectsCount" class="text-2xl font-bold mt-1">0</h3>
                         </div>
                         <div class="p-2 bg-[#C6FCA6]/10 rounded-lg">
                             <i data-lucide="folder" class="text-[#C6FCA6] w-5 h-5"></i>
@@ -64,15 +72,26 @@
         <script>
         lucide.createIcons();
         
+        // Session check (absolute path)
+        fetch('/admin/api/session.php')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.logged_in) window.location.href = '/admin/login.php';
+            });
+        
         // Load projects from API
         async function loadProjects() {
             try {
-                const response = await fetch('/admin/api/projects');
+                const response = await fetch('api/projects.php');
                 const projects = await response.json();
-                
+
+                // Total projects
+                const countEl = document.getElementById('totalProjectsCount');
+                if (countEl) countEl.textContent = projects.length;
+
                 const tbody = document.querySelector('tbody');
                 tbody.innerHTML = '';
-                
+
                 projects.forEach(project => {
                     const row = document.createElement('tr');
                     row.className = 'border-b border-white/10 hover:bg-white/5';
@@ -95,25 +114,47 @@
                         <td class="p-4">${new Date(project.created_at).toLocaleDateString()}</td>
                         <td class="p-4 text-right">
                             <div class="flex justify-end gap-2">
-                                <button class="p-2 hover:bg-white/10 rounded-lg" onclick="editProject(${project.id})">
-                                    <i data-lucide="edit" class="w-4 h-4"></i>
-                                </button>
-                                <button class="p-2 hover:bg-white/10 rounded-lg text-red-400" onclick="deleteProject(${project.id})">
+                                <button class="p-2 hover:bg-white/10 rounded-lg text-red-400" onclick="confirmDelete(${project.id})">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
                             </div>
                         </td>
                     `;
-                    
                     tbody.appendChild(row);
                 });
-                
+
                 lucide.createIcons();
             } catch (error) {
                 console.error('Error loading projects:', error);
             }
         }
-        
+
+        // SweetAlert delete
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Delete Project?',
+                text: 'Are you sure you want to delete this project?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch(`api/projects.php?id=${id}`, { method: 'DELETE' })
+                        .then(res => res.json())
+                        .then(data => {
+                            Swal.fire('Deleted!', data.message, 'success');
+                            loadProjects();
+                        });
+                }
+            });
+        }
+
+        // Logout
+        function logout() {
+            fetch('/admin/api/logout.php')
+                .then(() => window.location.href = 'login.php');
+        }
+
         // Initial load
         loadProjects();
         </script>

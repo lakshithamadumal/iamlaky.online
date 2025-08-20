@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (empty($_SESSION['admin_logged_in'])) {
+    header('Location: login.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -24,7 +31,7 @@
         <div class="main-content flex-1 p-8">
             <header class="flex justify-between items-center mb-8">
                 <h1 class="text-2xl font-bold">Add New Project</h1>
-                <a href="dashboard.html" class="text-sm bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg flex items-center gap-2">
+                <a href="dashboard.php" class="text-sm bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg flex items-center gap-2">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i>
                     Back to Dashboard
                 </a>
@@ -98,7 +105,7 @@
                                     <div class="flex flex-col items-center justify-center gap-3">
                                         <i data-lucide="upload" class="w-8 h-8 text-white/60"></i>
                                         <p class="text-sm text-white/60">Click to upload or drag and drop</p>
-                                        <p class="text-xs text-white/40">PNG, JPG (Recommended: 800x600)</p>
+                                        <p class="text-xs text-white/40 mt-1">PNG, JPG (Recommended: 800x600)</p>
                                     </div>
                                     <input
                                         type="file"
@@ -484,7 +491,7 @@
         // Form submission
         document.getElementById('projectForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const formData = new FormData();
             const projectType = document.querySelector('input[name="project_type"]:checked').value;
             
@@ -523,39 +530,39 @@
             }
             
             try {
-                // Show loading state
-                const submitBtn = e.target.querySelector('button[type="submit"]');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = `
-                    <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Saving...
-                `;
-                submitBtn.disabled = true;
-                
-                const response = await fetch('/admin/api/projects', {
+                // Show progress bar
+                Swal.fire({
+                    title: 'Saving...',
+                    html: '<div class="w-full bg-gray-200 rounded-full h-2.5"><div class="bg-[#C6FCA6] h-2.5 rounded-full w-3/4 animate-pulse"></div></div>',
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                });
+
+                const response = await fetch('/admin/api/projects.php', {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok) {
-                    window.location.href = '/admin/projects';
+                    Swal.fire('Success!', 'Project added successfully.', 'success')
+                        .then(() => window.location.href = '/admin/dashboard.php');
                 } else {
-                    alert(data.message || 'Error saving project');
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
+                    Swal.fire('Error', data.message || 'Error saving project', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred while saving the project');
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+                Swal.fire('Error', 'An error occurred while saving the project', 'error');
             }
         });
+        
+        // Session check (absolute path)
+        fetch('/admin/api/session.php')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.logged_in) window.location.href = '/admin/login.php';
+            });
         
         // Initialize preview
         updatePreview();

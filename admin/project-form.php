@@ -325,6 +325,7 @@ if (empty($_SESSION['admin_logged_in'])) {
                 </div>
             </div>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
         lucide.createIcons();
         
@@ -538,7 +539,7 @@ if (empty($_SESSION['admin_logged_in'])) {
                     allowOutsideClick: false,
                 });
 
-                const response = await fetch('/admin/api/projects.php', {
+                const response = await fetch('api/projects.php', {
                     method: 'POST',
                     body: formData
                 });
@@ -547,7 +548,7 @@ if (empty($_SESSION['admin_logged_in'])) {
 
                 if (response.ok) {
                     Swal.fire('Success!', 'Project added successfully.', 'success')
-                        .then(() => window.location.href = '/admin/dashboard.php');
+                        .then(() => window.location.href = 'dashboard.php');
                 } else {
                     Swal.fire('Error', data.message || 'Error saving project', 'error');
                 }
@@ -558,10 +559,10 @@ if (empty($_SESSION['admin_logged_in'])) {
         });
         
         // Session check (absolute path)
-        fetch('/admin/api/session.php')
+        fetch('api/session.php')
             .then(res => res.json())
             .then(data => {
-                if (!data.logged_in) window.location.href = '/admin/login.php';
+                if (!data.logged_in) window.location.href = 'login.php';
             });
         
         // Initialize preview

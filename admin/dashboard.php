@@ -72,11 +72,11 @@ if (empty($_SESSION['admin_logged_in'])) {
         <script>
         lucide.createIcons();
         
-        // Session check (absolute path)
-        fetch('/admin/api/session.php')
+        // Session check
+        fetch('api/session.php')
             .then(res => res.json())
             .then(data => {
-                if (!data.logged_in) window.location.href = '/admin/login.php';
+                if (!data.logged_in) window.location.href = 'login.php';
             });
         
         // Load projects from API
@@ -151,7 +151,7 @@ if (empty($_SESSION['admin_logged_in'])) {
 
         // Logout
         function logout() {
-            fetch('/admin/api/logout.php')
+            fetch('api/logout.php')
                 .then(() => window.location.href = 'login.php');
         }
 

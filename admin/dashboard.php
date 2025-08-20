@@ -7,78 +7,90 @@ if (empty($_SESSION['admin_logged_in'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Admin Dashboard | Laky</title>
-        <!--favicon icon-->
-        <link rel="shortcut icon" href="../assets/favicon.png" type="image/x-icon">
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://unpkg.com/lucide@latest"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #0D1725; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        </style>
-    </head>
-    <body class="min-h-screen text-white flex">
-        <!-- Main Content -->
-        <div class="main-content flex-1 p-8">
-            <header class="flex justify-between items-center mb-8">
-                <h1 class="text-2xl font-bold">Admin Dashboard</h1>
-                <div class="flex items-center gap-3">
-                    <a href="project-form.php" class="text-sm bg-gradient-to-r from-[#C6FCA6] to-[#A7FCEE] text-black px-4 py-2 rounded-lg flex items-center gap-2">
-                        <i data-lucide="plus" class="w-4 h-4"></i>
-                        Add New Project
-                    </a>
-                    <button onclick="logout()" class="text-sm bg-gradient-to-r from-[#FE946B] to-[#FC626C] text-white px-4 py-2 rounded-lg flex items-center gap-2">
-                        <i data-lucide="log-out" class="w-4 h-4"></i>
-                        Logout
-                    </button>
-                </div>
-            </header>
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 gap-6 mb-8">
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-white/60 text-sm">Total Projects</p>
-                            <h3 id="totalProjectsCount" class="text-2xl font-bold mt-1">0</h3>
-                        </div>
-                        <div class="p-2 bg-[#C6FCA6]/10 rounded-lg">
-                            <i data-lucide="folder" class="text-[#C6FCA6] w-5 h-5"></i>
-                        </div>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Laky</title>
+    <!--favicon icon-->
+    <link rel="shortcut icon" href="../assets/favicon.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0D1725;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen text-white flex">
+    <!-- Main Content -->
+    <div class="main-content flex-1 p-8">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+            <div class="flex items-center gap-3">
+                <a href="project-form.php" class="text-sm bg-gradient-to-r from-[#C6FCA6] to-[#A7FCEE] text-black px-4 py-2 rounded-lg flex items-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    Add New Project
+                </a>
+                <button onclick="logout()" class="text-sm bg-gradient-to-r from-[#FE946B] to-[#FC626C] text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    Logout
+                </button>
+            </div>
+        </header>
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 gap-6 mb-8">
+            <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-white/60 text-sm">Total Projects</p>
+                        <h3 id="totalProjectsCount" class="text-2xl font-bold mt-1">0</h3>
+                    </div>
+                    <div class="p-2 bg-[#C6FCA6]/10 rounded-lg">
+                        <i data-lucide="folder" class="text-[#C6FCA6] w-5 h-5"></i>
                     </div>
                 </div>
             </div>
-            <!-- Projects Table -->
-            <div class="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-                <table class="w-full">
-                    <thead class="border-b border-white/10">
-                        <tr>
-                            <th class="text-left p-4">Title</th>
-                            <th class="text-left p-4">Type</th>
-                            <th class="text-left p-4">Links</th>
-                            <th class="text-left p-4">Date</th>
-                            <th class="text-right p-4">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Projects would be loaded here dynamically --></tbody>
-                </table>
-            </div>
         </div>
-        <script>
+        <!-- Projects Table -->
+        <div class="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+            <table class="w-full">
+                <thead class="border-b border-white/10">
+                    <tr>
+                        <th class="text-left p-4">Title</th>
+                        <th class="text-left p-4">Type</th>
+                        <th class="text-left p-4">Links</th>
+                        <th class="text-left p-4">Date</th>
+                        <th class="text-right p-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Projects would be loaded here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
         lucide.createIcons();
-        
+
         // Session check
         fetch('api/session.php')
             .then(res => res.json())
             .then(data => {
                 if (!data.logged_in) window.location.href = 'login.php';
             });
-        
+
         // Load projects from API
         async function loadProjects() {
             try {
@@ -95,7 +107,7 @@ if (empty($_SESSION['admin_logged_in'])) {
                 projects.forEach(project => {
                     const row = document.createElement('tr');
                     row.className = 'border-b border-white/10 hover:bg-white/5';
-                    
+
                     // Determine project type
                     let typeBadge = '';
                     if (project.project_type === 'image') {
@@ -103,10 +115,10 @@ if (empty($_SESSION['admin_logged_in'])) {
                     } else {
                         typeBadge = `<span class="bg-[#833AB4]/10 text-[#833AB4] px-2 py-1 rounded text-xs">Gradient</span>`;
                     }
-                    
+
                     // Count enabled links
                     const linkCount = [project.has_linkedin, project.has_github, project.has_download].filter(Boolean).length;
-                    
+
                     row.innerHTML = `
                         <td class="p-4 font-medium">${project.title}</td>
                         <td class="p-4">${typeBadge}</td>
@@ -135,14 +147,29 @@ if (empty($_SESSION['admin_logged_in'])) {
                 title: 'Delete Project?',
                 text: 'Are you sure you want to delete this project?',
                 icon: 'warning',
+                background: '#1e1e1e', // 🖤 Dark background
+                color: '#ffffff', // 🤍 White text
+                iconColor: '#facc15', // 🟡 Yellow warning icon
                 showCancelButton: true,
                 confirmButtonText: 'Yes, delete it!',
+                confirmButtonColor: '#f97316', // 🟠 Orange confirm button
+                cancelButtonColor: '#6b7280' // ⚪ Neutral gray cancel button
             }).then(result => {
                 if (result.isConfirmed) {
-                    fetch(`api/projects.php?id=${id}`, { method: 'DELETE' })
+                    fetch(`api/projects.php?id=${id}`, {
+                            method: 'DELETE'
+                        })
                         .then(res => res.json())
                         .then(data => {
-                            Swal.fire('Deleted!', data.message, 'success');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: data.message,
+                                background: '#1e1e1e', // Dark background
+                                color: '#ffffff', // White text
+                                iconColor: '#4ade80', // Green success
+                                confirmButtonColor: '#4ade80'
+                            });
                             loadProjects();
                         });
                 }
@@ -157,6 +184,7 @@ if (empty($_SESSION['admin_logged_in'])) {
 
         // Initial load
         loadProjects();
-        </script>
-    </body>
+    </script>
+</body>
+
 </html>

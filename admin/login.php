@@ -61,6 +61,7 @@
             try {
                 const response = await fetch('api/login.php', {
                     method: 'POST',
+                    credentials: 'same-origin',
                     headers: {
                         'Content-Type': 'application/json'
                     },

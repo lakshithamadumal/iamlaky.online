@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/../includes/admin_session.php';
+start_admin_session();
 header('Content-Type: application/json');
 
 if (empty($_SESSION['admin_logged_in'])) {

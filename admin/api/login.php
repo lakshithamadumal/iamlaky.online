@@ -2,7 +2,8 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-session_start();
+require_once __DIR__ . '/../includes/admin_session.php';
+start_admin_session();
 header('Content-Type: application/json');
 // require_once __DIR__ . '/../../config.php'; // Temporarily comment if error
 
@@ -11,6 +12,7 @@ $email = $data['email'] ?? '';
 $password = $data['password'] ?? '';
 
 if ($email === 'mandujayaweera2003@gmail.com' && $password === '#Lucky2003') {
+    session_regenerate_id(true);
     $_SESSION['admin_logged_in'] = true;
     echo json_encode(['message' => 'Login successful']);
 } else {

@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/admin_session.php';
+start_admin_session();
 if (empty($_SESSION['admin_logged_in'])) {
     header('Location: login.php');
     exit;
@@ -85,7 +86,9 @@ if (empty($_SESSION['admin_logged_in'])) {
         lucide.createIcons();
 
         // Session check
-        fetch('api/session.php')
+        fetch('api/session.php', {
+                credentials: 'same-origin'
+            })
             .then(res => res.json())
             .then(data => {
                 if (!data.logged_in) window.location.href = 'login.php';
@@ -94,7 +97,9 @@ if (empty($_SESSION['admin_logged_in'])) {
         // Load projects from API
         async function loadProjects() {
             try {
-                const response = await fetch('api/projects.php');
+                const response = await fetch('api/projects.php', {
+                    credentials: 'same-origin'
+                });
                 const projects = await response.json();
 
                 // Total projects
@@ -157,7 +162,8 @@ if (empty($_SESSION['admin_logged_in'])) {
             }).then(result => {
                 if (result.isConfirmed) {
                     fetch(`api/projects.php?id=${id}`, {
-                            method: 'DELETE'
+                            method: 'DELETE',
+                            credentials: 'same-origin'
                         })
                         .then(res => res.json())
                         .then(data => {
@@ -178,7 +184,9 @@ if (empty($_SESSION['admin_logged_in'])) {
 
         // Logout
         function logout() {
-            fetch('api/logout.php')
+            fetch('api/logout.php', {
+                    credentials: 'same-origin'
+                })
                 .then(() => window.location.href = 'login.php');
         }
 

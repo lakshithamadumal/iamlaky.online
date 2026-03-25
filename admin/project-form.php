@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/admin_session.php';
+start_admin_session();
 if (empty($_SESSION['admin_logged_in'])) {
     header('Location: login.php');
     exit;
